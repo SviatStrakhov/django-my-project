@@ -5,6 +5,8 @@ services:
   # Database based on official postgres image
   db:
     image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     hostname: db
 
   # Our django application
@@ -18,7 +20,8 @@ services:
     hostname: app
     volumes:
       - ./app:/app
-      - static:/srv
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/mediafiles
     expose:
       - "8000"
     depends_on:
@@ -35,9 +38,12 @@ services:
       - "8000:8000"
     volumes:
       - ./config/nginx:/etc/nginx/conf.d
-      - static:/srv:ro
+      - static_volume:/usr/src/app/staticfiles:ro
+      - media_volume:/usr/src/app/mediafiles:ro
     depends_on:
       - app
 
 volumes:
-  static:
+  postgres_data:
+  static_volume:
+  media_volume:
